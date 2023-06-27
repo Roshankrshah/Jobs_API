@@ -8,6 +8,7 @@ const connectDB = require('./db/connect');
 const authRouter = require('./routes/auth');
 const jobsRouter = require('./routes/jobs');
 
+const authenticateUser = require('./middleware/authentication');
 app.use(express.json());
 
 
