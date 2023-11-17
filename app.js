@@ -11,6 +11,12 @@ const jobsRouter = require('./routes/jobs');
 const authenticateUser = require('./middleware/authentication');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 const notFound = require('./middleware/not-found');
+
+const swaggerUI = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerJSDocs = YAML.load('./api.yml');
+
+app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerJSDocs));
 app.use(express.json());
 
 

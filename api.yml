@@ -1,0 +1,37 @@
+swagger: "2.0"
+info:
+  title: Application Management API
+  description: Api for manage application for applicants
+  version: 1.0
+  contact:
+    email: shahroshan0720@gmail.com
+  license:
+    name: ISC
+  servers:
+    -url: http://localhost:3000/api/v1
+    description: This is local Server
+schemes: [http,https]
+
+paths:
+  /auth/register:
+    post:
+      summary: Register new user
+      description: New user create there space
+      responses:
+        201:
+        description: Successful Register
+        schema:
+          type: object
+        401:
+        description: not providing or providing invalid data
+        schema:
+          type: string
+      
+  /auth/login:
+    post:
+      summary: Login the user
+      description: Login the user
+      responses:
+        200:
+        description: OK
+        
