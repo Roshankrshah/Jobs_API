@@ -12,11 +12,9 @@ const authenticateUser = require('./middleware/authentication');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 const notFound = require('./middleware/not-found');
 
-const swaggerUI = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerJSDocs = YAML.load('./api.yml');
+const {swaggerServe, swaggerSetup} = require('./config');
 
-app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerJSDocs));
+app.use('/api-docs',swaggerServe,swaggerSetup);
 app.use(express.json());
 
 

@@ -1,37 +1,262 @@
-swagger: "2.0"
+openapi: 3.0.0
 info:
   title: Application Management API
   description: Api for manage application for applicants
   version: 1.0
-  contact:
-    email: shahroshan0720@gmail.com
-  license:
-    name: ISC
-  servers:
-    -url: http://localhost:3000/api/v1
-    description: This is local Server
-schemes: [http,https]
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local host server
+
+components:
+  securitySchemes:
+    authToken:
+      type: http
+      scheme: bearer
 
 paths:
   /auth/register:
     post:
       summary: Register new user
-      description: New user create there space
+      description: Create space for new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+              required:
+                - name
+                - email
+                - password
+
       responses:
-        201:
-        description: Successful Register
-        schema:
-          type: object
-        401:
-        description: not providing or providing invalid data
-        schema:
-          type: string
-      
+        '201':
+          description: Created, New user Created
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              token:
+                type: string
+        '400':
+          description: Bad Request, Insufficient Data
+        '500':
+          description: Internal Server Error
+  
   /auth/login:
     post:
-      summary: Login the user
-      description: Login the user
+      summary: Login User
+      description: Login the previous user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: 
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+              required:
+                - email
+                - password
       responses:
-        200:
-        description: OK
+        '200':
+          description: Login the user
+          schema:
+            schema:
+            type: object
+            properties:
+              name:
+                type: string
+              token:
+                type: string
+        '400':
+          description: Bad Request, Please provide email and Password
+        '401':
+          description: Unauthenticated Error, Invalid Credentials
+        '500':
+          description: Internal Server Error 
+
+  /jobs:
+    get:
+      security:
+        - authToken: []
+      summary: List all the job saved by user
+      description: Provide all the jobs saved by user in created date order.
+      responses:
+        '200':
+          description: OK. List of jobs
+          schema:
+            type: object
+            properties:
+              jobs:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    company:
+                      type: string
+                    post:
+                      type: string
+              count:
+                type: integer   
+        '401':
+          description: Unauthenticated Error, Invalid Credentials
+        '500':
+          description: Internal Server Error 
+    
+    post:
+      security:
+        - authToken: []
+      summary: Create new job to save in your job list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                post:
+                  type: string
+                status:
+                  type: string
+                  enum: ['interview','declined','pending']
+              required:
+                - company
+                - post
+                - status
+      responses:
+        '201':
+          description: Created. New job created and added to list
+          schema:
+            type: object
+            properties:
+              company:
+                type: string
+              post:
+                type: string
+              status:
+                type: string
+        '400':
+          description: Bad Request, Insufficient data
+        '401':
+          description: Unauthenticated Error, Invalid Credentials
+        '500':
+          description: Internal Server Error
+  
+  /jobs/{id}:
+    get:
+      security:
+        - authToken: []
+      summary: Get particular job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          description: id of job
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              company:
+                type: string
+              post:
+                type: string
+        '401':
+          description: Unauthenticated Error, Invalid Credentials
+        '404': 
+          description: Not Found. No job found with given jobId.
+        '500':
+          description: Internal Server Error 
+    
+    patch:
+      security:
+        - authToken: []
+      summary: Update the job in the list
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          description: id of job
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                post:
+                  type: string
+                status:
+                  type: string
+                  enum: ['interview','declined','pending']
+              required:
+                - company
+                - post
+                - status
+      responses:
+        '200':
+          description: OK. updated previous job
+          schema:
+            type: object
+            properties:
+              job:
+                type: string
+        '400':
+          description: Bad Request, Insufficient data
+        '401':
+          description: Unauthenticated Error, Invalid Credentials
+        '404':
+          description: Not Found. No job found with this jobId to update
+        '500':
+          description: Internal Server Error
+
+    delete:
+      security:
+        - authToken: []
+      summary: Delete the job with this jobId
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          description: id of job
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. Delete the job with jobId
+        '401':
+          description: Unauthenticated Error, Invalid Credentials
+        '404':
+          description: Not Found. No job found with this jobId to update
+        '500':
+          description: Internal Server Error
+
+
+
         
